@@ -71,6 +71,35 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
   res.json({ received: true });
 });
 
+app.post('/onboarding', express.json(), async (req, res) => {
+  const { business_name, website, vertical, sender_name, cta_type, cta_value, place_id } = req.body;
+
+  if (!business_name || !sender_name || !place_id) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const { error } = await supabase
+    .from('customers')
+    .insert({
+      business_name,
+      website,
+      vertical,
+      sender_name,
+      cta_type,
+      cta_value,
+      place_id,
+      status: 'active',
+    });
+
+  if (error) {
+    console.error('Onboarding DB error:', error.message);
+    return res.status(500).json({ error: 'Failed to save onboarding data' });
+  }
+
+  console.log(`Onboarding saved for ${sender_name} — ${business_name}`);
+  res.json({ success: true });
+});
+
 // Health check
 app.get('/health', (_, res) => res.json({ ok: true }));
 
