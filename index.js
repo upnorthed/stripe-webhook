@@ -3,7 +3,8 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 const { Resend } = require('resend');
 
-const app = express();
+const app = express();const cors = require('cors');
+app.use(cors({ origin: 'https://10milechris.com' }));
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
