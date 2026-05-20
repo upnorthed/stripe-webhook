@@ -73,7 +73,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 });
 
 app.post('/onboarding', express.json(), async (req, res) => {
-  const { business_name, website, vertical, sender_name, cta_type, cta_value, place_id } = req.body;
+  const { business_name, website, vertical, sender_name, cta_type, cta_value, place_id, lat, lng } = req.body;
 
   if (!business_name || !sender_name || !place_id) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -83,12 +83,14 @@ app.post('/onboarding', express.json(), async (req, res) => {
     .from('customers')
     .insert({
       business_name,
-      website,
-      vertical,
+      website: website || null,
+      vertical: vertical || null,
       sender_name,
       cta_type,
       cta_value,
       place_id,
+      lat: lat ? parseFloat(lat) : null,
+      lng: lng ? parseFloat(lng) : null,
       status: 'active',
     });
 
